@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KissAnime Auto Captcha
 // @namespace    https://greasyfork.org/en/users/135934-elti-musa
-// @version      0.1
+// @version      2
 // @description  Auto complete KissAnime Captcha
 // @author       AnimeBro1
 // @match        http://kissanime.ru/Special/AreYouHuman2*
