@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         KissAnime Auto Captcha
 // @namespace    https://greasyfork.org/en/users/135934-elti-musa
-// @version      2
+// @version      2.0
 // @description  Auto complete KissAnime Captcha
 // @author       AnimeBro1
 // @match        http://kissanime.ru/Special/AreYouHuman2*
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @grant        GM_listValues
-// @require  http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
+// @require      http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
 // ==/UserScript==
 
 var images = [];
@@ -17,13 +16,12 @@ var count = 0;
 (function() {
     $("body").append('<div id="CaptchaInfo" style="display:none;width:200px;height:150px;font-size:20px;position:fixed; top: 10px; left:10px; background: red; border-radius: 25px;padding:40px;"><p></p></div>');
    //getE();
-   //alert(GM_listValues());
+    //alert(GM_listValues());
     if(!isBasicJson()){
         getBasicJson();
     }
     document.getElementsByTagName("body")[0].onload = function(){
         var loaders = [];
-
         var x = $("[indexValue]").toArray();
         for(var i =0; i < 5; i++){
             getBase64Image(x[i]);
@@ -39,9 +37,19 @@ function isBasicJson(){
 }
 
 function getBasicJson(){
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    var isChrome = !!window.chrome && !!window.chrome.webstore;
     $("#CaptchaInfo").show();
     $("#CaptchaInfo").find("p").html("First time running, fetching some files... Page will reload.");
-    var msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJson.json", async: false}).responseText;
+    var msg='';
+    if(isChrome){
+        msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJson.json", async: false}).responseText;
+    }else if(isFirefox){
+         msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJsonFirefox.json", async: false}).responseText;
+    }else{
+        alert("Not FireFox or Chrome");
+        msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJsonFireFox.json", async: false}).responseText;
+    }
     msg = JSON.parse(msg);
     for(var i = 0; i < msg.length; i++){
         GM_setValue(msg[i].n,msg[i].v);
