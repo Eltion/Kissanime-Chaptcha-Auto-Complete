@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KissAnime Auto Captcha
 // @namespace    https://greasyfork.org/en/users/135934-elti-musa
-// @version      2.0
+// @version      2.1
 // @description  Auto complete KissAnime Captcha
 // @author       AnimeBro1
 // @match        http://kissanime.ru/Special/AreYouHuman2*
@@ -17,7 +17,7 @@ var count = 0;
     $("body").append('<div id="CaptchaInfo" style="display:none;width:200px;height:150px;font-size:20px;position:fixed; top: 10px; left:10px; background: red; border-radius: 25px;padding:40px;"><p></p></div>');
    //getE();
     //alert(GM_listValues());
-    if(!isBasicJson()){
+   if(!isBasicJson()){
         getBasicJson();
     }
     document.getElementsByTagName("body")[0].onload = function(){
@@ -43,12 +43,10 @@ function getBasicJson(){
     $("#CaptchaInfo").find("p").html("First time running, fetching some files... Page will reload.");
     var msg='';
     if(isChrome){
-        msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJson.json", async: false}).responseText;
-    }else if(isFirefox){
-         msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJsonFirefox.json", async: false}).responseText;
+        msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/2defdbb06ce3bde5368fd5a65308e9f878ddacf0/BasicJson1.json", async: false}).responseText;
     }else{
-        alert("Not FireFox or Chrome");
-        msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJsonFireFox.json", async: false}).responseText;
+        alert("Only for Chrome, for the moment");
+        //msg = $.ajax({type: "GET", url: "https://rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/master/BasicJsonFireFox.json", async: false}).responseText;
     }
     msg = JSON.parse(msg);
     for(var i = 0; i < msg.length; i++){
@@ -70,7 +68,7 @@ function getBase64Image(img) {
     canvas.height = img.naturalHeight;
     var ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0);
-    var dataURL = canvas.toDataURL("image/jpeg");
+    var dataURL = canvas.toDataURL("image/jpeg",0.2);
 
     //dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
     images.push(dataURL);
@@ -100,13 +98,14 @@ function Learn(){
 function Complete() {
     var jj = 0;
     for(var j = 0; j <2; j++){
-        var w1 = GM_getValue( words[j], false );
+        var w1 = GM_getValue(words[j], false);
         if(w1 !== false){
             if(w1.includes(" ")){
                 w1 = w1.split(" ");
             }else{
                 w1 = [w1];
             }
+            //window.prompt("Eltioni",w1);
             for(var k =0; k < w1.length; k++){
                 for(var i = 0; i < images.length; i++){
                     if(images[i] === w1[k]){
