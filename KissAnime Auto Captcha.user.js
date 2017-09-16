@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KissAnime Auto Captcha
 // @namespace    https://greasyfork.org/en/users/135934-elti-musa
-// @version      2.2
+// @version      2.3
 // @description  Auto complete KissAnime Captcha
 // @author       AnimeBro1
 // @match        http://kissanime.ru/Special/AreYouHuman2*
@@ -26,7 +26,7 @@ var count = 0;
     document.getElementsByTagName("body")[0].onload = function(){
         var loaders = [];
         var x = $("[indexValue]").toArray();
-        for(var i =0; i < 5; i++){
+        for(var i =0; i < x.length; i++){
             getBase64Image(x[i]);
         }
         console.log(images);
