@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         KissAnime Auto Captcha
+// @name         KissAnime Auto Captcha V3
 // @namespace    https://greasyfork.org/en/users/135934-elti-musa
-// @version      2.4
+// @version      3
 // @description  Auto complete KissAnime Captcha
 // @author       AnimeBro1
 // @match        http://kissanime.ru/Special/AreYouHuman2*
@@ -13,77 +13,40 @@
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
 // ==/UserScript==
 
-var images = [];
+
 var words = [];
+var imagesURL;
 var count = 0;
+var images = ["","","",""];
+var imagecount = 0;
+var imageURLcount = 0;
+var w;
+var count = 0;
+
 (function() {
-    $("body").append('<div id="CaptchaInfo" style="display:none;width:200px;height:150px;font-size:20px;position:fixed; top: 10px; left:10px; background: red; border-radius: 25px;padding:40px;"><p></p></div>');
-   //getE();
-    //alert(GM_listValues());
-   if(!isBasicJson()){
-       factoryReset();
+    $("body").append('<div id="CaptchaInfo" style="z-index: 99999999; display:none;width:200px;height:150px;font-size:14px;position:fixed; top: 10px; left:10px; background: #14dd3edb; border-radius: 25px;padding:40px;"><p></p></div>');
+
+    if(!isBasicJson()){
+        factoryReset();
         getBasicJson();
     }
-    document.getElementsByTagName("body")[0].onload = function(){
-        var loaders = [];
-        var x = $("[indexValue]").toArray();
-        for(var i =0; i < x.length; i++){
-            getBase64Image(x[i]);
-        }
-        console.log(images);
-        words = getWords();
-        Complete();
-    };
+    words = getWords();
+    imagesURL = $("[indexValue]").toArray();
+    toDataURL(imagesURL[0].src,function(data){DONE(data);});
 })();
 
-function factoryReset(){
-    var keys = GM_listValues();
-    for (var i=0; i < keys.length; i++) {
-        GM_deleteValue(keys[i]);
-    }
-}
-function isBasicJson(){
-    return GM_getValue("AnimeBro2",false);
-}
+function DONE(a){
+    //alert(imageURLcount);
+    imageURLcount++;
 
-function getBasicJson(){
-    var isFirefox = typeof InstallTrigger !== 'undefined';
-    var isChrome = !!window.chrome && !!window.chrome.webstore;
-    $("#CaptchaInfo").show();
-    $("#CaptchaInfo").find("p").html("First time running, fetching some files... Page will reload.");
-    var msg='';
-    if(isChrome){
-        msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/623d627fa2ec94dea00621e406e66088a61b6bff/BasicJson1.json", async: false}).responseText;
-    }else if(isFirefox){
-        msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/623d627fa2ec94dea00621e406e66088a61b6bff/BasicJsonFireFox1.json", async: false}).responseText;
+    images[imagecount] = cutImage64(cutImage64(a,3),2);
+    if(imagecount == 3){
+        console.log(images);
+        Complete();
     }else{
-        alert("Not Chrome or Firefox. Tryng the chrome database");
-        msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/623d627fa2ec94dea00621e406e66088a61b6bff/BasicJson1.json", async: false}).responseText;
+        toDataURL(imagesURL[imageURLcount].src,function(data){DONE(data);});
+        imagecount++;
     }
-    msg = JSON.parse(msg);
-    for(var i = 0; i < msg.length; i++){
-        GM_setValue(msg[i].n,msg[i].v);
-    }
-    location.reload();
-}
-function getE(){
-    var x = GM_listValues();
-    var b = "";
-    for(var i =0; i < x.length; i++){
-        b += '{"n":"'+x[i]+'","v":"'+GM_getValue(x[i])+'"},';
-    }
-    $('body').html("<p>"+b+"</p>");
-}
-function getBase64Image(img) {
-    var canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    var dataURL = canvas.toDataURL("image/jpeg",0.2);
-
-    //dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-    images.push(dataURL);
 }
 
 function getWords(){
@@ -93,22 +56,56 @@ function getWords(){
     return [First, Second];
 }
 
-function Learn(){
-    $("[indexValue]").on('click', function(){
-        count++;
-        var x = parseInt($(this).attr("indexValue"));
-        if(GM_getValue(words[count-1],false) !== false){
-            var nn = GM_getValue(words[count-1])+" "+images[x];
-            GM_setValue(words[count-1],nn);
-        }else{
-            var gg = images[x];
-            GM_setValue(words[count-1],gg);
-        }
-    });
+function cutImage64(base64,s){
+    var a = "";
+    for(var i = 0; i < base64.length; i=i+s){
+        a += base64.charAt(i);
+    }
+    return a;
+}
+
+function toDataURL(url, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.onload = function() {
+    var reader = new FileReader();
+    reader.onloadend = function() {
+      callback(reader.result);
+    };
+    reader.readAsDataURL(xhr.response);
+  };
+    //alert("http://kissanime.ru/Special/"+url);
+  xhr.open('GET', url);
+  xhr.responseType = 'blob';
+  xhr.send();
+}
+
+function getBasicJson(){
+    $("#CaptchaInfo").show();
+    $("#CaptchaInfo").find("p").html("First time running, fetching some files... Page will reload.");
+    var msg='';
+
+    msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/111255eebd4ee25aaa2ad6d072b75ae446217d97/KissAnime.Downloader.Chaptcha.Database.json", async: false}).responseText;
+
+    msg = JSON.parse(msg);
+    for(var i = 0; i < msg.length; i++){
+        GM_setValue(msg[i].n,msg[i].v);
+    }
+    location.reload();
+}
+function isBasicJson(){
+    return GM_getValue("AnimeBro2",false);
+}
+
+function factoryReset(){
+    var keys = GM_listValues();
+    for (var i=0; i < keys.length; i++) {
+        GM_deleteValue(keys[i]);
+    }
 }
 
 function Complete() {
     var jj = 0;
+    console.log(images);
     for(var j = 0; j <2; j++){
         var w1 = GM_getValue(words[j], false);
         if(w1 !== false){
@@ -117,30 +114,19 @@ function Complete() {
             }else{
                 w1 = [w1];
             }
-            //window.prompt("Eltioni",w1);
             for(var k =0; k < w1.length; k++){
                 for(var i = 0; i < images.length; i++){
                     if(images[i] === w1[k]){
                         $("[indexValue='"+i+"']").click();
                         jj++;
-                        if(j === 0){
-                            count++;
-                        }
                     }
                 }
             }
         }
     }
-    UpdateTest(jj);
-    Learn();
-}
-
-function UpdateTest(jj){
-    if(jj === 0){
-        $("#CaptchaInfo").show();
-        $("#CaptchaInfo").find("p").html("Couldn't recognize the images. Please select them so script can learn them for next time. IMPORTANT ***Select them in order***");
-    }else if(jj === 1){
-        $("#CaptchaInfo").show();
-        $("#CaptchaInfo").find("p").html("Only one of the images is recognized. Please select the other one so script can learn it for next time.");
+    if(jj < 2){
+        location.reload();
     }
+    //UpdateTest(jj);
+    //Learn();
 }
