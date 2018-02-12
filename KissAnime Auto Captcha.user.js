@@ -28,6 +28,7 @@ var count = 0;
     $("body").append('<div id="CaptchaInfo" style="z-index: 99999999; display:none;width:200px;height:150px;font-size:14px;position:fixed; top: 10px; left:10px; background: #14dd3edb; border-radius: 25px;padding:40px;"><p></p></div>');
 
     if(!isBasicJson()){
+        alert("FIRST TIME RUNNING: Make sure you REMOVE previous version of the script.");
         factoryReset();
         getBasicJson();
     }else{
