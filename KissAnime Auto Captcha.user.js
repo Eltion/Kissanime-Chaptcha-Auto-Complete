@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         KissAnime Auto Captcha V3
+// @name         KissAnime Auto Captcha V3.2
 // @namespace    https://greasyfork.org/en/users/135934-elti-musa
-// @version      3.1
+// @version      3.2
 // @description  Auto complete KissAnime Captcha
 // @author       AnimeBro1
 // @match        http://kissanime.ru/Special/AreYouHuman2*
@@ -10,6 +10,7 @@
 // @grant        GM_getValue
 // @grant        GM_listValues
 // @grant        GM_deleteValue
+// @grant        GM_xmlhttpRequest
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
 // ==/UserScript==
 
@@ -84,14 +85,20 @@ function getBasicJson(){
     $("#CaptchaInfo").show();
     $("#CaptchaInfo").find("p").html("First time running, fetching some files... Page will reload.");
     var msg='';
-
-    msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/111255eebd4ee25aaa2ad6d072b75ae446217d97/KissAnime.Downloader.Chaptcha.Database.json", async: false}).responseText;
-
-    msg = JSON.parse(msg);
-    for(var i = 0; i < msg.length; i++){
-        GM_setValue(msg[i].n,msg[i].v);
-    }
-    location.reload();
+    //msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/111255eebd4ee25aaa2ad6d072b75ae446217d97/KissAnime.Downloader.Chaptcha.Database.json", async: false}).responseText;
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/111255eebd4ee25aaa2ad6d072b75ae446217d97/KissAnime.Downloader.Chaptcha.Database.json",
+        synchronous: true,
+        onload: function(response) {
+            msg = response.responseText;
+            msg = JSON.parse(msg);
+            for(var i = 0; i < msg.length; i++){
+                GM_setValue(msg[i].n,msg[i].v);
+            }
+            location.reload();
+        }
+    });
 }
 function isBasicJson(){
     return GM_getValue("AnimeBro2",false);
