@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KissAnime Auto Captcha V3.2
 // @namespace    https://greasyfork.org/en/users/135934-elti-musa
-// @version      3.2
+// @version      3.2.1
 // @description  Auto complete KissAnime Captcha
 // @author       AnimeBro1
 // @match        http://kissanime.ru/Special/AreYouHuman2*
@@ -22,7 +22,6 @@ var images = ["","","",""];
 var imagecount = 0;
 var imageURLcount = 0;
 var w;
-var count = 0;
 
 (function() {
     $("body").append('<div id="CaptchaInfo" style="z-index: 99999999; display:none;width:200px;height:150px;font-size:14px;position:fixed; top: 10px; left:10px; background: #14dd3edb; border-radius: 25px;padding:40px;"><p></p></div>');
@@ -89,7 +88,7 @@ function getBasicJson(){
     //msg = $.ajax({type: "GET", url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/111255eebd4ee25aaa2ad6d072b75ae446217d97/KissAnime.Downloader.Chaptcha.Database.json", async: false}).responseText;
     GM_xmlhttpRequest({
         method: "GET",
-        url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/111255eebd4ee25aaa2ad6d072b75ae446217d97/KissAnime.Downloader.Chaptcha.Database.json",
+        url: "https://cdn.rawgit.com/Eltion/Kissanime-Chaptcha-Auto-Complete/eee0c4153d22cec5a5327efc8d7d8ba3b37394d9/KissAnime.Downloader.Chaptcha.Database2.json",
         synchronous: true,
         onload: function(response) {
             msg = response.responseText;
@@ -102,7 +101,7 @@ function getBasicJson(){
     });
 }
 function isBasicJson(){
-    return GM_getValue("AnimeBro2",false);
+    return GM_getValue("AnimeBro3",false);
 }
 
 function factoryReset(){
